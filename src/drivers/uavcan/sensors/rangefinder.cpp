@@ -125,8 +125,13 @@ int UavcanRangefinderBridge::init_driver(uavcan_bridge::Channel *channel)
 	device_id.devid_s.devtype = DRV_DIST_DEVTYPE_UAVCAN;
 	device_id.devid_s.address = static_cast<uint8_t>(channel->node_id);
 
-	channel->h_driver = new PX4Rangefinder(device_id.devid, distance_sensor_s::ROTATION_DOWNWARD_FACING);
-
+  uint8_t forward_rangefinder = 50;
+  if (device_id.devid_s.address == forward_rangefinder) {
+	  channel->h_driver = new PX4Rangefinder(device_id.devid, distance_sensor_s::ROTATION_FORWARD_FACING);
+  } else {
+	  channel->h_driver = new PX4Rangefinder(device_id.devid, distance_sensor_s::ROTATION_DOWNWARD_FACING);
+  }
+  
 	if (channel->h_driver == nullptr) {
 		return PX4_ERROR;
 	}
